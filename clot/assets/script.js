@@ -9,6 +9,7 @@ const paginationContainer = document.getElementById("pagination");
 
 let allPosts = [];
 let currentPage = 1;
+let selectedTags = new Set(); 
 const postsPerPage = 5;
 
 async function fetchIssues() {
@@ -22,6 +23,89 @@ async function fetchIssues() {
   populateCategories();
   renderPosts();
 }
+
+function populateTagCheckboxes() {
+  const tagSet = new Set();
+  allPosts.forEach(post => post.labels.forEach(label => tagSet.add(label)));
+
+  const container = document.getElementById("tagCheckboxes");
+  container.innerHTML = "";
+
+  tagSet.forEach(tag => {
+    const label = document.createElement("label");
+    label.style.marginRight = "10px";
+    label.innerHTML = `
+      <input type="checkbox" value="${tag}" onchange="toggleTagFilter('${tag}', this.checked)">
+      ${tag}
+    `;
+    container.appendChild(label);
+  });
+}
+
+function toggleTagFilter(tag, isChecked) {
+  if (isChecked) {
+    selectedTags.add(tag);
+  } else {
+    selectedTags.delete(tag);
+  }
+  currentPage = 1;
+  renderPosts();
+}
+
+function renderPosts() {
+  const searchTerm = searchInput.value.toLowerCase();
+  const filteredPosts = allPosts.filter(post =>
+    (post.title.toLowerCase().includes(searchTerm) || post.body.toLowerCase().includes(searchTerm)) &&
+    (selectedTags.size === 0 || [...selectedTags].every(tag => post.labels.includes(tag)))
+  );
+
+  const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
+  const start = (currentPage - 1) * postsPerPage;
+  const paginatedPosts = filteredPosts.slice(start, start + postsPerPage);
+
+  postsContainer.innerHTML = "";
+  paginatedPosts.forEach(post => {
+    const postDiv = document.createElement("div");
+    postDiv.className = "post";
+
+    const title = document.createElement("h2");
+    title.className = "text-xl font-bold mb-2";
+    title.textContent = post.title;
+
+    const body = document.createElement("div");
+    body.className = "prose";
+    body.innerHTML = marked.parse(post.body);
+
+    const tagContainer = document.createElement("div");
+    tagContainer.className = "mt-2";
+    post.labels.forEach(label => {
+      const tag = document.createElement("span");
+      tag.textContent = label;
+      tag.className = "category-label";
+      tag.style.cursor = "pointer";
+      tag.onclick = () => {
+        const checkbox = [...document.querySelectorAll('#tagCheckboxes input')].find(cb => cb.value === label);
+        if (checkbox) {
+          checkbox.checked = !checkbox.checked;
+          toggleTagFilter(label, checkbox.checked);
+        }
+      };
+      tagContainer.appendChild(tag);
+    });
+
+    postDiv.appendChild(title);
+    postDiv.appendChild(body);
+    postDiv.appendChild(tagContainer);
+    postsContainer.appendChild(postDiv);
+  });
+
+  renderPagination(totalPages);
+}
+
+// Dopo aver caricato le issue
+fetchIssues().then(() => {
+  populateTagCheckboxes();
+});
 
 function populateCategories() {
   const categories = new Set();
