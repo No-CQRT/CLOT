@@ -1,16 +1,17 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CLOT</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
     body {
       background-color: #f6f6ef;
       color: #000000;
       font-family: Verdana, Geneva, Tahoma, sans-serif;
+      margin: 0;
+      padding: 0;
     }
     header {
       background-color: #ff6600;
@@ -18,39 +19,77 @@
       color: white;
       font-weight: bold;
       font-size: 18px;
+      display: flex;
+      align-items: center;
     }
-    .tag-cloud span {
-      display: inline-block;
-      margin: 4px;
-      padding: 4px 8px;
-      background-color: #ddd;
+    header img {
+      height: 40px;
+      width: 40px;
+      margin-right: 10px;
+    }
+    h1 {
+      font-size: 24px;
+      margin: 0;
+    }
+    .container {
+      padding: 20px;
+    }
+    .post {
+      border-bottom: 1px solid #ddd;
+      padding: 10px 0;
+    }
+    a {
+      color: #0000ee;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    input, select {
+      font-family: inherit;
+      font-size: 14px;
+      padding: 6px;
+      border: 1px solid #ccc;
       border-radius: 4px;
+      margin-bottom: 10px;
+    }
+    .category-label {
+      background-color: #ddd;
+      color: #333;
       font-size: 12px;
+      padding: 2px 6px;
+      border-radius: 3px;
+      margin-right: 5px;
+      display: inline-block;
+    }
+    .pagination button {
+      background-color: #fff;
+      border: 1px solid #ccc;
+      padding: 4px 8px;
+      margin: 0 2px;
       cursor: pointer;
     }
-    .tag-cloud span:hover {
-      background-color: #ccc;
+    .pagination button.active {
+      background-color: #ff6600;
+      color: white;
+      border-color: #ff6600;
     }
   </style>
 </head>
 <body>
   <header>
-    <img src="assets/logo.jpg" alt="Logo" style="height:40px; width:40px; vertical-align:middle; margin-right:8px;">
-    CLOT - Curated List of Tools
+    <img src="clot/assets/logo.png" alt="Logo" />
+    <h1>CLOT</h1>
   </header>
-
-  <main class="p-4">
-    <input type="text" id="searchInput" placeholder="Search..." class="mb-4 p-2 border border-gray-300 rounded w-full">
-    <div id="tagFilters" class="mb-4"></div>
-    <div class="tag-cloud mb-4" id="tagCloud"></div>
+  <div class="container">
+    <h2>Curated List of Tools</h2>
+    <input type="text" id="searchInput" placeholder="Search posts..." />
+    <select id="categoryFilter">
+      <option value="">All Categories</option>
+    </select>
     <div id="posts"></div>
-    <div class="pagination mt-4" id="pagination"></div>
-  </main>
-
-  <footer class="text-center text-sm text-gray-600 border-t border-gray-300 mt-8 p-4">
-    &copy; 2025 - <a href="https://github.com/No-CQRT/clot" class="text-blue-600">GitHub Repository</a>
-  </footer>
-
-  <script src="assets/script.js"></script>
+    <div class="pagination" id="pagination"></div>
+  </div>
+  <script src="clot/assets/script.js"></script>
 </body>
 </html>
