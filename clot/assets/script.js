@@ -1,6 +1,7 @@
 const repoOwner = "No-CQRT";
 const repoName = "clot";
 const issuesUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/issues`;
+
 const postsContainer = document.getElementById("posts");
 const searchInput = document.getElementById("searchInput");
 const categoryFilter = document.getElementById("categoryFilter");
@@ -15,9 +16,8 @@ async function fetchIssues() {
   const issues = await response.json();
   allPosts = issues.map(issue => ({
     title: issue.title,
-    body: marked.parse(issue.body),
-    labels: issue.labels.map(label => label.name),
-    links: [...issue.body.matchAll(/https?:\/\/\S+/g)].map(match => match[0])
+    body: issue.body,
+    labels: issue.labels.map(label => label.name)
   }));
   populateCategories();
   renderPosts();
@@ -45,19 +45,28 @@ function renderPosts() {
 
   const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
   const start = (currentPage - 1) * postsPerPage;
-  const end = start + postsPerPage;
-  const paginatedPosts = filteredPosts.slice(start, end);
+  const paginatedPosts = filteredPosts.slice(start, start + postsPerPage);
 
   postsContainer.innerHTML = "";
   paginatedPosts.forEach(post => {
     const postDiv = document.createElement("div");
-    postDiv.className = "post";
-    postDiv.innerHTML = `
-      <h3>${post.title}</h3>
-      <div>${post.body}</div>
-      <div>${post.links.map(link => `<a href="${link}" target="_blank">${link}</a>`).join(", ")}</div>
-      <div>${post.labels.map(label => `<span class="category-label">${label}</span>`).join("")}</div>
-    `;
+    postDiv.className = "bg-white p-4 rounded shadow mb-4";
+
+    const title = document.createElement("h2");
+    title.className = "text-xl font-bold mb-2";
+    title.textContent = post.title;
+
+    const body = document.createElement("div");
+    body.className = "prose";
+    body.innerHTML = marked.parse(post.body); // Markdown rendering
+
+    const categories = document.createElement("div");
+    categories.className = "mt-2 text-sm text-gray-600";
+    categories.textContent = `Categories: ${post.labels.join(", ")}`;
+
+    postDiv.appendChild(title);
+    postDiv.appendChild(body);
+    postDiv.appendChild(categories);
     postsContainer.appendChild(postDiv);
   });
 
@@ -69,7 +78,7 @@ function renderPagination(totalPages) {
   for (let i = 1; i <= totalPages; i++) {
     const btn = document.createElement("button");
     btn.textContent = i;
-    btn.className = i === currentPage ? "active" : "";
+    btn.className = `px-3 py-1 border rounded ${i === currentPage ? "bg-blue-500 text-white" : ""}`;
     btn.onclick = () => {
       currentPage = i;
       renderPosts();
