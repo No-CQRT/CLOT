@@ -50,7 +50,7 @@ function renderPosts() {
   postsContainer.innerHTML = "";
   paginatedPosts.forEach(post => {
     const postDiv = document.createElement("div");
-    postDiv.className = "bg-white p-4 rounded shadow mb-4";
+    postDiv.className = "bg-white p-4 rounded shadow mb-4 post";
 
     const title = document.createElement("h2");
     title.className = "text-xl font-bold mb-2";
