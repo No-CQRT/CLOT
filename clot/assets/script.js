@@ -13,13 +13,24 @@ let currentPage = 1;
 const postsPerPage = 5;
 
 async function fetchIssues() {
-  const response = await fetch(issuesUrl);
-  const issues = await response.json();
-  allPosts = issues.map(issue => ({
+  const perPage = 100;
+  const maxPages = 10;
+  let allFetchedIssues = [];
+
+  for (let page = 1; page <= maxPages; page++) {
+    const response = await fetch(`${issuesUrl}?per_page=${perPage}&page=${page}`);
+    const issues = await response.json();
+
+    if (issues.length === 0) break; // Stop if no more issues
+    allFetchedIssues = allFetchedIssues.concat(issues);
+  }
+
+  allPosts = allFetchedIssues.map(issue => ({
     title: issue.title,
     body: issue.body,
     labels: issue.labels.map(label => label.name)
   }));
+
   populateCategories();
   renderPosts();
 }
