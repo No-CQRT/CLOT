@@ -1,0 +1,13 @@
+name: NOISSUES
+on: 
+  issues: 
+    types: [opened] 
+jobs: 
+  restrict-issue-creation: 
+    runs-on: ubuntu-latest 
+    steps: 
+      - name: Check user 
+        run: | 
+          if [[ "$GITHUB_ACTOR" != "allowed-user" ]]; then 
+            gh issue close "$ISSUE_NUMBER" --comment "Solo utenti autorizzati possono aprire issue." 
+          fi
